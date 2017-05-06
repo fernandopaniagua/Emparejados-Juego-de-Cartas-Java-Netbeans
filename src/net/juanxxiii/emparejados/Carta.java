@@ -4,6 +4,7 @@ import javax.swing.JLabel;
 
 /**
  * Representa una carta, compuesto por un JLabel y un identificador de posición
+ * para poder posteriormente identificar el JLabel pulsado.
  * 
  * @author FPA
  */
