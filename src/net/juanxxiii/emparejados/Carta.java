@@ -7,6 +7,7 @@ import javax.swing.JLabel;
  * para poder posteriormente identificar el JLabel pulsado.
  * 
  * @author FPA
+ * @version 1.0 
  */
 public class Carta extends JLabel {
     private int pos;
