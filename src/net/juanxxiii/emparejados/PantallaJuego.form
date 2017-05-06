@@ -15,7 +15,7 @@
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-    <Property name="columns" type="int" value="4"/>
+    <Property name="columns" type="int" value="6"/>
     <Property name="rows" type="int" value="3"/>
   </Layout>
 </Form>

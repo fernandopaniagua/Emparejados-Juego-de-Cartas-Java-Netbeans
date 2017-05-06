@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.juanxxiii.emparejados;
 
 import java.awt.event.MouseAdapter;
@@ -16,24 +11,39 @@ import javax.swing.JLabel;
 
 /**
  * Juego de parejas (incompleto)
+ *
  * @author FPA
  */
 public class PantallaJuego extends javax.swing.JPanel {
 
-    static final int NUM_CARTAS = 12;
-    int numeroCartas = 0;
+    static final int NUM_CARTAS = 18;//Número de cartas en la partida
+    int numeroCartas = 0;//Número decartas en el mazo
     ArrayList<String> baraja = new ArrayList();//Baraja con todas las cartas
     ArrayList<String> parejas = new ArrayList();//Parejas de la partida
-    
+    int[] estado = new int[NUM_CARTAS];//Estado de las cartas
+    static final int REVERSO = 0;//Estados de las cartas
+    static final int ANVERSO = 1;//Estados de las cartas
+
     /**
      * Constructor
      */
     public PantallaJuego() {
         initComponents();
-        inicializaParejas();
+        intGame();
         cargarCartas();
         agregarPareja();
         crearUI();
+    }
+
+    /**
+     * Inicializa el juego
+     */
+    private void intGame() {
+        //Inicializa el array de cartas y el array de estado de las cartas
+        for (int i = 0; i < NUM_CARTAS; i++) {
+            parejas.add(null);
+            estado[i] = REVERSO;
+        }
     }
 
     /**
@@ -67,10 +77,10 @@ public class PantallaJuego extends javax.swing.JPanel {
             //Se genera la nueva carta
             nuevaCarta = generarCartaNoUsada();
             //Se busca una posición libre en parejas y se agrega la carta (2 veces)
-            for (int j=0;j<2;j++){
+            for (int j = 0; j < 2; j++) {
                 do {
                     aleatorio = (int) (Math.random() * NUM_CARTAS);
-                    if (parejas.get(aleatorio)==null){
+                    if (parejas.get(aleatorio) == null) {
                         parejas.set(aleatorio, nuevaCarta);
                         break;
                     }
@@ -82,7 +92,7 @@ public class PantallaJuego extends javax.swing.JPanel {
     /**
      * Genera una carta del mazo, comprobando que no esté entre las que ya se
      * han utilizado en las parejas
-     * 
+     *
      * @return Carta generada
      */
     private String generarCartaNoUsada() {
@@ -92,16 +102,10 @@ public class PantallaJuego extends javax.swing.JPanel {
         } while (parejas.contains(baraja.get(aleatorio)));
         return baraja.get(aleatorio);
     }
-    
-    /**
-     * Inicializa las cartas de la partida a null para facilitar la programación
-     */
-    private void inicializaParejas(){
-        for (int i=0;i<NUM_CARTAS;i++){
-            parejas.add(null);
-        }
-    }
 
+    /**
+     * Crea las cartas y agrega los listener
+     */
     private void crearUI() {
         Carta carta;
         for (int i = 0; i < NUM_CARTAS; i++) {
@@ -109,18 +113,30 @@ public class PantallaJuego extends javax.swing.JPanel {
             //LISTENER
             carta.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
-                    int pos = ((Carta)e.getComponent()).getPos();
-                    ((JLabel)e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/" + parejas.get(pos))));
+                    int pos = ((Carta) e.getComponent()).getPos();
+                    System.out.println(parejas.get(pos));
+                    estado[pos]=ANVERSO;
+                    ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/" + parejas.get(pos))));
                 }
+
                 public void mousePressed(MouseEvent e) {
                 }
+
                 public void mouseReleased(MouseEvent e) {
                 }
+
                 public void mouseEntered(MouseEvent e) {
-                    ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/backwhite.gif")));
+                    int pos = ((Carta) e.getComponent()).getPos();
+                    if (estado[pos] == REVERSO) {
+                        ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/backwhite.gif")));
+                    }
                 }
+
                 public void mouseExited(MouseEvent e) {
-                    ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/back.gif")));
+                    int pos = ((Carta) e.getComponent()).getPos();
+                    if (estado[pos] == REVERSO) {
+                        ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/back.gif")));
+                    }
                 }
             });
             //ASIGNACION DE ICONO
@@ -138,7 +154,7 @@ public class PantallaJuego extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setLayout(new java.awt.GridLayout(3, 4));
+        setLayout(new java.awt.GridLayout(3, 6));
     }// </editor-fold>//GEN-END:initComponents
 
 

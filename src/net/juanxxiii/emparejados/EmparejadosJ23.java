@@ -5,8 +5,6 @@
  */
 package net.juanxxiii.emparejados;
 
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -20,7 +18,7 @@ public class EmparejadosJ23 extends javax.swing.JFrame {
      */
     public EmparejadosJ23() {
         initComponents();
-        setBounds(0,0,580,640);
+        setBounds(0,0,850,640);
         getContentPane().add(pj);
     }
 
