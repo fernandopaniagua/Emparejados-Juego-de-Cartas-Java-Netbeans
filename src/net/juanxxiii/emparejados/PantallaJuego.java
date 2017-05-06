@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 /**
  * Juego de parejas (incompleto)
@@ -16,20 +17,25 @@ import javax.swing.JLabel;
  */
 public class PantallaJuego extends javax.swing.JPanel {
 
-    static final int NUM_CARTAS = 18;//Número de cartas en la partida
-    int numeroCartas = 0;//Número decartas en el mazo
-    ArrayList<String> baraja = new ArrayList();//Baraja con todas las cartas
-    ArrayList<String> parejas = new ArrayList();//Parejas de la partida
-    int[] estado = new int[NUM_CARTAS];//Estado de las cartas
-    static final int REVERSO = 0;//Estados de las cartas
-    static final int ANVERSO = 1;//Estados de las cartas
-
+    private static final int NUM_CARTAS = 18;//Número de cartas en la partida
+    private int numeroCartas = 0;//Número decartas en el mazo
+    private ArrayList<String> baraja = new ArrayList();//Baraja con todas las cartas
+    private ArrayList<String> parejas = new ArrayList();//Parejas de la partida
+    private int[] estado = new int[NUM_CARTAS];//Estado de las cartas
+    private static final int REVERSO = 0;//Estados de las cartas
+    private static final int ANVERSO = 1;//Estados de las cartas
+    //La variable primera contiene la primera carta levantada de cada par
+    //Con valor null indica que no se ha levantado la primera carta aún
+    private static JLabel primeraJLabel = null;
+    private String primeraNombre = null;
+    private int primeraIndice = -1;
+    private int numeroParejas=0;//Número de parejas conseguido
     /**
      * Constructor
      */
     public PantallaJuego() {
         initComponents();
-        intGame();
+        initGame();
         cargarCartas();
         agregarPareja();
         crearUI();
@@ -38,7 +44,7 @@ public class PantallaJuego extends javax.swing.JPanel {
     /**
      * Inicializa el juego
      */
-    private void intGame() {
+    private void initGame() {
         //Inicializa el array de cartas y el array de estado de las cartas
         for (int i = 0; i < NUM_CARTAS; i++) {
             parejas.add(null);
@@ -114,9 +120,48 @@ public class PantallaJuego extends javax.swing.JPanel {
             carta.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
                     int pos = ((Carta) e.getComponent()).getPos();
-                    System.out.println(parejas.get(pos));
-                    estado[pos]=ANVERSO;
-                    ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/" + parejas.get(pos))));
+                    if (estado[pos] == REVERSO) {
+                        estado[pos] = ANVERSO;
+                        ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/" + parejas.get(pos))));
+                        if (primeraJLabel == null) {
+                            //Ha levantado la primera carta
+                            primeraJLabel = (JLabel) e.getComponent();
+                            primeraNombre = parejas.get(pos);
+                            primeraIndice = pos;
+                        } else {
+                            //Ha levantado la segunda carta
+                            if (!parejas.get(pos).equals(primeraNombre)) {
+                                //No hay pareja, esperamos y damos la vuelta
+                                new Thread() {
+                                    public void run() {
+                                        try {
+                                            sleep(500);
+                                            ((JLabel) e.getComponent()).setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/back.gif")));
+                                            primeraJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/back.gif")));
+                                            primeraJLabel = null;
+                                            primeraNombre = null;
+                                            primeraIndice = -1;
+                                        } catch (InterruptedException ex) {
+                                        }
+                                    }
+                                }.start();
+                                //Las dejo en estado REVERSO
+                                estado[pos] = REVERSO;
+                                estado[primeraIndice] = REVERSO;
+                            } else {
+                                //Hay pareja. Hacemos reset y contamos +1
+                                primeraJLabel = null;
+                                primeraNombre = null;
+                                primeraIndice = -1;
+                                numeroParejas++;
+                                if (numeroParejas==NUM_CARTAS/2){
+                                    JOptionPane.showMessageDialog(PantallaJuego.this,"¡ENHORABUENA!", 
+                                    "EmparejadosJ23", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                            
+                        }
+                    }
                 }
 
                 public void mousePressed(MouseEvent e) {
